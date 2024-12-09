@@ -26,21 +26,41 @@
 .main {
     display: flex;
     flex-direction: column;
-    gap: 20px;
 
     .buttonGroup {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 10px;
+    }
+
+    .grid {
+        margin-bottom: 20px;
+        height: 600px;
+
+        .gridItemIdx {
+            display: flex;
+            align-items: flex-end;
+            text-align: left;
+        }
+
+        .gridItemDate {
+            padding: 4px;
+            border-radius: 3px;
+            background: #3e3e3e;
+
+            &.inactive {
+                filter: brightness(0.8) blur(1px);
+            }
+        }
     }
 }
 
 .footer {
+    border-top: 1px solid #fff;
 
+    .optionWrapper {
+        display: flex;
+        flex-direction: column;
+    }
 }
 
-.optionWrapper {
-    display: flex;
-    flex-direction: column;
-}

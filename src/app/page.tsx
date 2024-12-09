@@ -12,7 +12,7 @@ export default function Home() {
   const [region, setRegion] = useState(1);
   const [year, setYear] = useState(new Date(Date.now()).getFullYear());
   const [month, setMonth] = useState(new Date(Date.now()).getMonth()); // January: 0 - December: 11
-  const [monthData, setMonthData] = useState<{ date: string; dayOfWeek: string }[]>([]);
+  const [monthData, setMonthData] = useState<{ date: string; dayOfWeek: string; thisMonth: boolean }[]>([]);
   const [isWeekStartsWithSunday, setIsWeekStartsWithSunday] = useState(true);
 
   const onClickPrevMonth = useCallback(() => {
@@ -32,6 +32,14 @@ export default function Home() {
     setYear(chk ? year + 1 : year);
   }, [month, year]);
 
+  const GridItems = React.Children.toArray(
+    monthData.map((item, index) => (
+      <Grid className={`${styles.gridItemDate} ${!item.thisMonth && styles.inactive}`} size={12 / 7} key={index}>
+        {item.date}
+      </Grid>
+    )),
+  );
+
   // 선택된 달의 날짜들을 계산하는 useEffect
   useEffect(() => {
     // TODO: react-query 같은 global storage를 사용할 경우 caching 하여 매번 계산하지 않도록 변경할 필요
@@ -44,20 +52,20 @@ export default function Home() {
       Friday: 5,
       Saturday: 6,
     } as { [key: string]: number };
-    const currentMonthData = getMonthlyDates(year, month);
+    const currentMonthData = getMonthlyDates(year, month).map((v) => ({ ...v, thisMonth: true }));
 
     const prevMonthData = getMonthlyDates(
       month === 0 ? year - 1 : year,
       (month + 11) % 12,
       isWeekStartsWithSunday ? -daysOfWeekMap[currentMonthData[0].dayOfWeek] : -((daysOfWeekMap[currentMonthData[0].dayOfWeek] + 6) % 7),
-    );
+    ).map((v) => ({ ...v, thisMonth: false }));
     const nextMonthData = getMonthlyDates(
       month === 11 ? year + 1 : year,
       (month + 1) % 12,
       isWeekStartsWithSunday
         ? 6 - daysOfWeekMap[currentMonthData[currentMonthData.length - 1].dayOfWeek]
         : 6 - ((daysOfWeekMap[currentMonthData[currentMonthData.length - 1].dayOfWeek] + 6) % 7),
-    );
+    ).map((v) => ({ ...v, thisMonth: false }));
 
     setMonthData(prevMonthData.concat(currentMonthData, nextMonthData));
   }, [year, month, isWeekStartsWithSunday]);
@@ -91,21 +99,15 @@ export default function Home() {
             Next
           </Button>
         </div>
-        <Grid container rowSpacing={4} columnSpacing={2}>
+        <Grid container rowSpacing={1} columnSpacing={1} className={styles.grid}>
           {React.Children.toArray(
             ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((item, index) => (
-              <Grid size={12 / 7} key={index} style={{ textAlign: 'center' }}>
+              <Grid className={styles.gridItemIdx} size={12 / 7} key={index}>
                 {item}
               </Grid>
             )),
           )}
-          {React.Children.toArray(
-            monthData.map((item, index) => (
-              <Grid size={12 / 7} key={index} style={{ textAlign: 'center' }}>
-                {item.date}
-              </Grid>
-            )),
-          )}
+          {GridItems}
         </Grid>
       </main>
       <footer className={styles.footer}>

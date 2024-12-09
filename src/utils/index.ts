@@ -1,10 +1,5 @@
 import wd from './pjweather_info.json';
 
-// 날짜 형식 문자열 생성 함수 추출
-function formatDateString(year: number, month: number, day: number) {
-  return `${month + 1}/${day}`;
-}
-
 // 요일 이름 배열 상수 추출
 const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -24,7 +19,7 @@ export function getMonthlyDates(
   for (let day = firstDay.getDate(); day <= lastDay.getDate(); day++) {
     const date = new Date(year, month, day);
     dates.push({
-      date: formatDateString(year, month, day),
+      date: day.toString(),
       dayOfWeek: DAYS_OF_WEEK[date.getDay()],
     });
   }

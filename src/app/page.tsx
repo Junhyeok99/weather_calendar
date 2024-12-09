@@ -8,7 +8,7 @@ import { getMonthlyDates, getWeatherDataByRegion } from 'utils';
 
 import styles from './page.module.scss';
 
-const WeatherIconMap = (weather: string) => {
+const WeatherIconMap = (weather?: string) => {
   switch (weather) {
     case '맑음':
       return '☀️';
@@ -29,7 +29,7 @@ export default function Home() {
   const [region, setRegion] = useState(1);
   const [year, setYear] = useState(new Date(Date.now()).getFullYear());
   const [month, setMonth] = useState(new Date(Date.now()).getMonth()); // January: 0 - December: 11
-  const [monthData, setMonthData] = useState<{ date: string; dayOfWeek: string; thisMonth: boolean }[]>([]);
+  const [monthData, setMonthData] = useState<{ date: string; day: string; dayOfWeek: string; thisMonth: boolean }[]>([]);
   const [weatherData, setWeatherData] = useState<{ id: number; region: string; date: string; tMax: string; tMin: string; weather: string }[]>([]);
   const [isWeekStartsWithSunday, setIsWeekStartsWithSunday] = useState(true);
 
@@ -54,12 +54,12 @@ export default function Home() {
     monthData.map((item, index) => (
       <Grid className={`${styles.gridItemDate} ${!item.thisMonth && styles.inactive}`} size={12 / 7} key={index}>
         <div className={styles.gridItemWrapper}>
-          <div>{item.date}</div>
+          <div>{item.day}</div>
           <div className={styles.weatherDisplay}>
-            <div className={styles.weather}>☀️</div>
+            <div className={styles.weather}>{WeatherIconMap(weatherData.find((v) => v.date == item.date)?.weather)}</div>
             <div className={styles.temperatureWrapper}>
-              <div>30 ℃</div>
-              <div>20 ℃</div>
+              <div>{(weatherData.find((v) => v.date == item.date)?.tMax ?? '❔') + ' ℃'}</div>
+              <div>{(weatherData.find((v) => v.date == item.date)?.tMin ?? '❔') + ' ℃'}</div>
             </div>
           </div>
         </div>
@@ -99,7 +99,11 @@ export default function Home() {
 
   // 선택된 달과 Region에 해당하는 날씨 Data를 받아오는 useEffect
   useEffect(() => {
-    setWeatherData(getWeatherDataByRegion(region.toString(), year, month));
+    const prevMonth = getWeatherDataByRegion(region.toString(), month === 0 ? year - 1 : year, (month + 11) % 12);
+    const currentMonth = getWeatherDataByRegion(region.toString(), year, month);
+    const nextMonth = getWeatherDataByRegion(region.toString(), month === 11 ? year + 1 : year, (month + 1) % 12);
+
+    setWeatherData(prevMonth.concat(currentMonth, nextMonth));
   }, [month, region, year]);
 
   return (

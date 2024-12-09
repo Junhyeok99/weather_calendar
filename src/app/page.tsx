@@ -1,10 +1,16 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, Checkbox, FormControlLabel, MenuItem } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Grid2 as Grid,
+  MenuItem,
+} from "@mui/material";
 
 import { Select } from "component";
-import { getMonthlyDates } from "utils";
+import { getMonthlyDates, getWeatherDataByRegion } from "utils";
 
 import styles from "./page.module.scss";
 
@@ -34,6 +40,7 @@ export default function Home() {
     setYear(chk ? year + 1 : year);
   }, [month, year]);
 
+  // Get selected month data
   useEffect(() => {
     // TODO: caching this data to global storage like react-query.
     const daysOfWeekMap = {
@@ -50,25 +57,28 @@ export default function Home() {
     const prevMonthData = getMonthlyDates(
       month === 0 ? year - 1 : year,
       (month + 11) % 12,
-      -daysOfWeekMap[currentMonthData[0].dayOfWeek],
+      isWeekStartsWithSunday
+        ? -daysOfWeekMap[currentMonthData[0].dayOfWeek]
+        : -((daysOfWeekMap[currentMonthData[0].dayOfWeek] + 6) % 7),
     );
     const nextMonthData = getMonthlyDates(
       month === 11 ? year + 1 : year,
       (month + 1) % 12,
-      6 -
-        daysOfWeekMap[currentMonthData[currentMonthData.length - 1].dayOfWeek],
+      isWeekStartsWithSunday
+        ? 6 -
+            daysOfWeekMap[
+              currentMonthData[currentMonthData.length - 1].dayOfWeek
+            ]
+        : 6 -
+            ((daysOfWeekMap[
+              currentMonthData[currentMonthData.length - 1].dayOfWeek
+            ] +
+              6) %
+              7),
     );
 
     setMonthData(prevMonthData.concat(currentMonthData, nextMonthData));
-  }, [year, month]);
-
-  // useEffect(() => {
-  //   console.log(getWeatherDataByRegion(region.toString()));
-  // }, [region]);
-
-  useEffect(() => {
-    console.log(monthData);
-  }, [monthData]);
+  }, [year, month, isWeekStartsWithSunday]);
 
   return (
     <div className={styles.wrapper}>
@@ -128,6 +138,13 @@ export default function Home() {
             Next
           </Button>
         </div>
+        <Grid container rowSpacing={4} columnSpacing={2}>
+          {monthData.map((item, index) => (
+            <Grid size={12 / 7} key={index} style={{ textAlign: "center" }}>
+              {item.date.split("-")[0] + "/" + item.date.split("-")[1]}
+            </Grid>
+          ))}
+        </Grid>
         <FormControlLabel
           control={
             <Checkbox

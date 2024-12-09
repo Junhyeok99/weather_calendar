@@ -2,7 +2,7 @@ import wd from "./pjweather_info.json";
 
 // 날짜 형식 문자열 생성 함수 추출
 function formatDateString(year: number, month: number, day: number) {
-  return `${year}-${month + 1}-${day}`;
+  return `${month + 1}-${day}`;
 }
 
 // 요일 이름 배열 상수 추출

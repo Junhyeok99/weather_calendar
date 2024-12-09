@@ -58,8 +58,8 @@ export default function Home() {
           <div className={styles.weatherDisplay}>
             <div className={styles.weather}>☀️</div>
             <div className={styles.temperatureWrapper}>
-              <div>30</div>
-              <div>20</div>
+              <div>30 ℃</div>
+              <div>20 ℃</div>
             </div>
           </div>
         </div>

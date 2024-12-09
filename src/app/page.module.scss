@@ -63,6 +63,32 @@
             &.inactive {
                 filter: brightness(0.8) blur(1px);
             }
+
+            .gridItemWrapper {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                height: 100%;
+            }
+
+            .weatherDisplay {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                height: 100%;
+
+                .weather {
+                    font-size: 35px;
+                    user-select: none;
+                }
+
+                .temperatureWrapper {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    height: 100%;
+                }
+            }
         }
     }
 }

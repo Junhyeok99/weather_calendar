@@ -28,7 +28,18 @@ export function getMonthlyDates(
 }
 
 // 백엔드 API가 이런 기능을 할 것이라고 가정하고 만든 함수
-export function getWeatherDataByRegion(region: string) {
+export function getWeatherDataByRegion(region: string, year: number, month: number) {
   //since we have region 1 - 16, input must be "1" - "16"
-  return wd.filter((item) => item.region === region);
+  console.log(wd.reduce((acc, cur) => ({ ...acc, [cur.wthrSKY_PTY]: 0 }), {}));
+
+  return wd
+    .filter((item) => item.region === region && item.wthrDate.includes(`${year}-${month + 1}`))
+    .map((item) => ({
+      id: item.wthrIdx,
+      region: item.region,
+      date: item.wthrDate,
+      tMax: item.wthrTMax,
+      tMin: item.wthrTMin,
+      weather: item.wthrSKY_PTY,
+    }));
 }

@@ -8,11 +8,29 @@ import { getMonthlyDates, getWeatherDataByRegion } from 'utils';
 
 import styles from './page.module.scss';
 
+const WeatherIconMap = (weather: string) => {
+  switch (weather) {
+    case '맑음':
+      return '☀️';
+    case '구름많음':
+      return '🌥️';
+    case '흐림':
+      return '☁️';
+    case '흐리고 비':
+      return '🌧️';
+    case '흐리고 비/눈':
+      return '🌨️';
+    default:
+      return '🚧';
+  }
+};
+
 export default function Home() {
   const [region, setRegion] = useState(1);
   const [year, setYear] = useState(new Date(Date.now()).getFullYear());
   const [month, setMonth] = useState(new Date(Date.now()).getMonth()); // January: 0 - December: 11
   const [monthData, setMonthData] = useState<{ date: string; dayOfWeek: string; thisMonth: boolean }[]>([]);
+  const [weatherData, setWeatherData] = useState<{ id: number; region: string; date: string; tMax: string; tMin: string; weather: string }[]>([]);
   const [isWeekStartsWithSunday, setIsWeekStartsWithSunday] = useState(true);
 
   const onClickPrevMonth = useCallback(() => {
@@ -35,7 +53,16 @@ export default function Home() {
   const GridItems = React.Children.toArray(
     monthData.map((item, index) => (
       <Grid className={`${styles.gridItemDate} ${!item.thisMonth && styles.inactive}`} size={12 / 7} key={index}>
-        {item.date}
+        <div className={styles.gridItemWrapper}>
+          <div>{item.date}</div>
+          <div className={styles.weatherDisplay}>
+            <div className={styles.weather}>☀️</div>
+            <div className={styles.temperatureWrapper}>
+              <div>30</div>
+              <div>20</div>
+            </div>
+          </div>
+        </div>
       </Grid>
     )),
   );
@@ -70,6 +97,11 @@ export default function Home() {
     setMonthData(prevMonthData.concat(currentMonthData, nextMonthData));
   }, [year, month, isWeekStartsWithSunday]);
 
+  // 선택된 달과 Region에 해당하는 날씨 Data를 받아오는 useEffect
+  useEffect(() => {
+    setWeatherData(getWeatherDataByRegion(region.toString(), year, month));
+  }, [month, region, year]);
+
   return (
     <div className={styles.wrapper}>
       <header className={styles.header}>
@@ -102,9 +134,9 @@ export default function Home() {
         <div className={styles.dateDisplay}>{`${year} / ${month + 1}`}</div>
         <Grid container rowSpacing={1} columnSpacing={1} className={styles.grid}>
           {React.Children.toArray(
-            (isWeekStartsWithSunday ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']).map((item, index) => (
+            (isWeekStartsWithSunday ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']).map((dayOfWeek, index) => (
               <Grid className={styles.gridItemIdx} size={12 / 7} key={index}>
-                {item}
+                {dayOfWeek}
               </Grid>
             )),
           )}

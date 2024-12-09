@@ -1,26 +1,18 @@
-"use client";
+'use client';
 
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  Button,
-  Checkbox,
-  FormControlLabel,
-  Grid2 as Grid,
-  MenuItem,
-} from "@mui/material";
+import React, { useCallback, useEffect, useState } from 'react';
+import { Button, Checkbox, FormControlLabel, Grid2 as Grid, MenuItem } from '@mui/material';
 
-import { Select } from "component";
-import { getMonthlyDates, getWeatherDataByRegion } from "utils";
+import { Select } from 'component';
+import { getMonthlyDates, getWeatherDataByRegion } from 'utils';
 
-import styles from "./page.module.scss";
+import styles from './page.module.scss';
 
 export default function Home() {
   const [region, setRegion] = useState(1);
   const [year, setYear] = useState(new Date(Date.now()).getFullYear());
   const [month, setMonth] = useState(new Date(Date.now()).getMonth()); // January: 0 - December: 11
-  const [monthData, setMonthData] = useState<
-    { date: string; dayOfWeek: string }[]
-  >([]);
+  const [monthData, setMonthData] = useState<{ date: string; dayOfWeek: string }[]>([]);
   const [isWeekStartsWithSunday, setIsWeekStartsWithSunday] = useState(true);
 
   const onClickPrevMonth = useCallback(() => {
@@ -40,9 +32,9 @@ export default function Home() {
     setYear(chk ? year + 1 : year);
   }, [month, year]);
 
-  // Get selected month data
+  // 선택된 달의 날짜들을 계산하는 useEffect
   useEffect(() => {
-    // TODO: caching this data to global storage like react-query.
+    // TODO: react-query 같은 global storage를 사용할 경우 caching 하여 매번 계산하지 않도록 변경할 필요
     const daysOfWeekMap = {
       Sunday: 0,
       Monday: 1,
@@ -57,24 +49,14 @@ export default function Home() {
     const prevMonthData = getMonthlyDates(
       month === 0 ? year - 1 : year,
       (month + 11) % 12,
-      isWeekStartsWithSunday
-        ? -daysOfWeekMap[currentMonthData[0].dayOfWeek]
-        : -((daysOfWeekMap[currentMonthData[0].dayOfWeek] + 6) % 7),
+      isWeekStartsWithSunday ? -daysOfWeekMap[currentMonthData[0].dayOfWeek] : -((daysOfWeekMap[currentMonthData[0].dayOfWeek] + 6) % 7),
     );
     const nextMonthData = getMonthlyDates(
       month === 11 ? year + 1 : year,
       (month + 1) % 12,
       isWeekStartsWithSunday
-        ? 6 -
-            daysOfWeekMap[
-              currentMonthData[currentMonthData.length - 1].dayOfWeek
-            ]
-        : 6 -
-            ((daysOfWeekMap[
-              currentMonthData[currentMonthData.length - 1].dayOfWeek
-            ] +
-              6) %
-              7),
+        ? 6 - daysOfWeekMap[currentMonthData[currentMonthData.length - 1].dayOfWeek]
+        : 6 - ((daysOfWeekMap[currentMonthData[currentMonthData.length - 1].dayOfWeek] + 6) % 7),
     );
 
     setMonthData(prevMonthData.concat(currentMonthData, nextMonthData));
@@ -83,41 +65,15 @@ export default function Home() {
   return (
     <div className={styles.wrapper}>
       <header className={styles.header}>
-        <Select
-          id="year"
-          placeholder="Year"
-          value={year}
-          onChange={setYear}
-          width="100px"
-        >
+        <Select id="year" placeholder="Year" value={year} onChange={setYear} width="100px">
           <MenuItem value={2024}>2024</MenuItem>
           <MenuItem value={2025}>2025</MenuItem>
         </Select>
-        <Select
-          id="month"
-          placeholder="Month"
-          value={month}
-          onChange={setMonth}
-          width="100px"
-        >
-          {React.Children.toArray(
-            Array.from(Array(12)).map((_, i) => (
-              <MenuItem value={i}>{i + 1}</MenuItem>
-            )),
-          )}
+        <Select id="month" placeholder="Month" value={month} onChange={setMonth} width="100px">
+          {React.Children.toArray(Array.from(Array(12)).map((_, i) => <MenuItem value={i}>{i + 1}</MenuItem>))}
         </Select>
-        <Select
-          id="region"
-          placeholder="Region"
-          value={region}
-          onChange={setRegion}
-          width="100px"
-        >
-          {React.Children.toArray(
-            Array.from(Array(16)).map((_, i) => (
-              <MenuItem value={i + 1}>{i + 1}</MenuItem>
-            )),
-          )}
+        <Select id="region" placeholder="Region" value={region} onChange={setRegion} width="100px">
+          {React.Children.toArray(Array.from(Array(16)).map((_, i) => <MenuItem value={i + 1}>{i + 1}</MenuItem>))}
         </Select>
         <div className={styles.title}>Weather Calendar</div>
       </header>
@@ -126,10 +82,7 @@ export default function Home() {
           <Button variant="contained" onClick={onClickPrevMonth}>
             Previous
           </Button>
-          {!(
-            year === new Date(Date.now()).getFullYear() &&
-            month === new Date(Date.now()).getMonth()
-          ) && (
+          {!(year === new Date(Date.now()).getFullYear() && month === new Date(Date.now()).getMonth()) && (
             <Button variant="contained" onClick={onClickThisMonth}>
               This Month
             </Button>
@@ -139,25 +92,28 @@ export default function Home() {
           </Button>
         </div>
         <Grid container rowSpacing={4} columnSpacing={2}>
-          {monthData.map((item, index) => (
-            <Grid size={12 / 7} key={index} style={{ textAlign: "center" }}>
-              {item.date.split("-")[0] + "/" + item.date.split("-")[1]}
-            </Grid>
-          ))}
+          {React.Children.toArray(
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((item, index) => (
+              <Grid size={12 / 7} key={index} style={{ textAlign: 'center' }}>
+                {item}
+              </Grid>
+            )),
+          )}
+          {React.Children.toArray(
+            monthData.map((item, index) => (
+              <Grid size={12 / 7} key={index} style={{ textAlign: 'center' }}>
+                {item.date}
+              </Grid>
+            )),
+          )}
         </Grid>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={isWeekStartsWithSunday}
-              onChange={() =>
-                setIsWeekStartsWithSunday(!isWeekStartsWithSunday)
-              }
-            />
-          }
-          label="Start with Sunday"
-        />
       </main>
-      <footer className={styles.footer}></footer>
+      <footer className={styles.footer}>
+        <div className={styles.optionWrapper}>
+          <div>Options</div>
+          <FormControlLabel control={<Checkbox checked={isWeekStartsWithSunday} onChange={() => setIsWeekStartsWithSunday(!isWeekStartsWithSunday)} />} label="Start with Sunday" />
+        </div>
+      </footer>
     </div>
   );
 }

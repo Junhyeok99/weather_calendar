@@ -14,9 +14,15 @@ export default function Home() {
   const [month, setMonth] = useState(new Date(Date.now()).getMonth()); // January: 0 - December: 11
 
   useEffect(() => {
-    const prevMonth = getMonthlyDates(year - (month === 0), (month - 1) % 12);
+    const prevMonth = getMonthlyDates(
+      month === 0 ? year - 1 : year,
+      (month + 11) % 12,
+    );
     const currentMonth = getMonthlyDates(year, month);
-    const nextMonth = getMonthlyDates(year + (month === 11), (month + 1) % 12);
+    const nextMonth = getMonthlyDates(
+      month === 11 ? year + 1 : year,
+      (month + 1) % 12,
+    );
 
     console.log({ prevMonth, currentMonth, nextMonth });
   }, [year, month]);

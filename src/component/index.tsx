@@ -4,11 +4,12 @@ import { FormControl, InputLabel, Select as MSelect } from "@mui/material";
 import styles from "./index.module.scss";
 
 interface SelectProps {
-  id: string;
+  id?: string;
   placeholder: string;
   children: React.ReactNode;
   value: number;
   onChange: (value: number) => void;
+  width?: string | number;
 }
 
 export function Select({
@@ -17,9 +18,14 @@ export function Select({
   children,
   value,
   onChange,
+  width,
 }: SelectProps) {
   return (
-    <FormControl id={id + "-select-form"} className={styles.form}>
+    <FormControl
+      id={id + "-select-form"}
+      className={styles.form}
+      style={{ width: width }}
+    >
       <InputLabel id={id + "-select-label"}>{placeholder}</InputLabel>
       <MSelect
         labelId={id + "-select-label"}

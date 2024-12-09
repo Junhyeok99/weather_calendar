@@ -34,7 +34,13 @@ export default function Home() {
   return (
     <div className={styles.wrapper}>
       <header className={styles.header}>
-        <Select id="year" placeholder="Year" value={year} onChange={setYear}>
+        <Select
+          id="year"
+          placeholder="Year"
+          value={year}
+          onChange={setYear}
+          width="100px"
+        >
           <MenuItem value={2024}>2024</MenuItem>
           <MenuItem value={2025}>2025</MenuItem>
         </Select>
@@ -43,6 +49,7 @@ export default function Home() {
           placeholder="Month"
           value={month}
           onChange={setMonth}
+          width="100px"
         >
           {React.Children.toArray(
             Array.from(Array(12)).map((_, i) => (
@@ -55,6 +62,7 @@ export default function Home() {
           placeholder="Region"
           value={region}
           onChange={setRegion}
+          width="100px"
         >
           {React.Children.toArray(
             Array.from(Array(16)).map((_, i) => (
@@ -62,6 +70,7 @@ export default function Home() {
             )),
           )}
         </Select>
+        <div className={styles.title}>Weather Calendar</div>
       </header>
       <main className={styles.main}></main>
       <footer className={styles.footer}></footer>

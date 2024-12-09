@@ -13,8 +13,10 @@
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.1.10",
     "next": "15.0.4",
+    "prettier": "^3.4.2",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sass": "^1.82.0"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -1,0 +1,31 @@
+.wrapper {
+    height: 100%;
+    background: #1f1f1f;
+
+    > * {
+        padding: 20px 10px 0;
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #000;
+    background: #4a4a4a;
+
+    * {
+        color: white;
+    }
+}
+
+.main {
+
+}
+
+.footer {
+
+}

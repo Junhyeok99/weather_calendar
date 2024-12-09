@@ -1,30 +1,48 @@
 import wd from "./pjweather_info.json";
 
-export function getMonthlyDates(year: number, month: number) {
-  // month is 0-indexed: January is 0, February is 1, ..., December is 11
-  const dates = [];
-  const daysOfWeek = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
+// 날짜 형식 문자열 생성 함수 추출
+function formatDateString(year: number, month: number, day: number) {
+  return `${year}-${month + 1}-${day}`;
+}
 
-  const firstDay = new Date(year, month, 1); // First day of the month
-  const lastDay = new Date(year, month + 1, 0); // Last day of the month
+// 요일 이름 배열 상수 추출
+const DAYS_OF_WEEK = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+function sliceDates(
+  dates: Array<{ date: string; dayOfWeek: string }>,
+  sliceCount: number,
+) {
+  return sliceCount < 0
+    ? dates.slice(dates.length + sliceCount)
+    : dates.slice(0, sliceCount);
+}
+
+export function getMonthlyDates(
+  year: number,
+  month: number,
+  sliceCount?: number, // 매개변수 기본값 설정
+) {
+  const dates: Array<{ date: string; dayOfWeek: string }> = [];
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
 
   for (let day = firstDay.getDate(); day <= lastDay.getDate(); day++) {
     const date = new Date(year, month, day);
     dates.push({
-      date: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`,
-      dayOfWeek: daysOfWeek[date.getDay()],
+      date: formatDateString(year, month, day),
+      dayOfWeek: DAYS_OF_WEEK[date.getDay()],
     });
   }
 
-  return dates;
+  return sliceCount === undefined ? dates : sliceDates(dates, sliceCount);
 }
 
 // suppose we get this Fn from Backend api

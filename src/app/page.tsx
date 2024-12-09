@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { MenuItem } from "@mui/material";
+import React, { useCallback, useEffect, useState } from "react";
+import { Button, Checkbox, FormControlLabel, MenuItem } from "@mui/material";
 
 import { Select } from "component";
-import { getMonthlyDates, getWeatherDataByRegion } from "utils";
+import { getMonthlyDates } from "utils";
 
 import styles from "./page.module.scss";
 
@@ -12,24 +12,63 @@ export default function Home() {
   const [region, setRegion] = useState(1);
   const [year, setYear] = useState(new Date(Date.now()).getFullYear());
   const [month, setMonth] = useState(new Date(Date.now()).getMonth()); // January: 0 - December: 11
+  const [monthData, setMonthData] = useState<
+    { date: string; dayOfWeek: string }[]
+  >([]);
+  const [isWeekStartsWithSunday, setIsWeekStartsWithSunday] = useState(true);
+
+  const onClickPrevMonth = useCallback(() => {
+    if (month === 0 && year === 2024) return;
+    const chk = month === 0;
+    setMonth(chk ? 11 : month - 1);
+    setYear(chk ? year - 1 : year);
+  }, [month, year]);
+  const onClickThisMonth = useCallback(() => {
+    setMonth(new Date(Date.now()).getMonth());
+    setYear(new Date(Date.now()).getFullYear());
+  }, []);
+  const onClickNextMonth = useCallback(() => {
+    if (month === 11 && year === 2025) return;
+    const chk = month === 11;
+    setMonth(chk ? 0 : month + 1);
+    setYear(chk ? year + 1 : year);
+  }, [month, year]);
 
   useEffect(() => {
-    const prevMonth = getMonthlyDates(
+    // TODO: caching this data to global storage like react-query.
+    const daysOfWeekMap = {
+      Sunday: 0,
+      Monday: 1,
+      Tuesday: 2,
+      Wednesday: 3,
+      Thursday: 4,
+      Friday: 5,
+      Saturday: 6,
+    } as { [key: string]: number };
+    const currentMonthData = getMonthlyDates(year, month);
+
+    const prevMonthData = getMonthlyDates(
       month === 0 ? year - 1 : year,
       (month + 11) % 12,
+      -daysOfWeekMap[currentMonthData[0].dayOfWeek],
     );
-    const currentMonth = getMonthlyDates(year, month);
-    const nextMonth = getMonthlyDates(
+    const nextMonthData = getMonthlyDates(
       month === 11 ? year + 1 : year,
       (month + 1) % 12,
+      6 -
+        daysOfWeekMap[currentMonthData[currentMonthData.length - 1].dayOfWeek],
     );
 
-    console.log({ prevMonth, currentMonth, nextMonth });
+    setMonthData(prevMonthData.concat(currentMonthData, nextMonthData));
   }, [year, month]);
 
+  // useEffect(() => {
+  //   console.log(getWeatherDataByRegion(region.toString()));
+  // }, [region]);
+
   useEffect(() => {
-    console.log(getWeatherDataByRegion(region.toString()));
-  }, [region]);
+    console.log(monthData);
+  }, [monthData]);
 
   return (
     <div className={styles.wrapper}>
@@ -72,7 +111,35 @@ export default function Home() {
         </Select>
         <div className={styles.title}>Weather Calendar</div>
       </header>
-      <main className={styles.main}></main>
+      <main className={styles.main}>
+        <div className={styles.buttonGroup}>
+          <Button variant="contained" onClick={onClickPrevMonth}>
+            Previous
+          </Button>
+          {!(
+            year === new Date(Date.now()).getFullYear() &&
+            month === new Date(Date.now()).getMonth()
+          ) && (
+            <Button variant="contained" onClick={onClickThisMonth}>
+              This Month
+            </Button>
+          )}
+          <Button variant="contained" onClick={onClickNextMonth}>
+            Next
+          </Button>
+        </div>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={isWeekStartsWithSunday}
+              onChange={() =>
+                setIsWeekStartsWithSunday(!isWeekStartsWithSunday)
+              }
+            />
+          }
+          label="Start with Sunday"
+        />
+      </main>
       <footer className={styles.footer}></footer>
     </div>
   );

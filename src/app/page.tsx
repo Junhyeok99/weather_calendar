@@ -99,9 +99,10 @@ export default function Home() {
             Next
           </Button>
         </div>
+        <div className={styles.dateDisplay}>{`${year} / ${month + 1}`}</div>
         <Grid container rowSpacing={1} columnSpacing={1} className={styles.grid}>
           {React.Children.toArray(
-            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((item, index) => (
+            (isWeekStartsWithSunday ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']).map((item, index) => (
               <Grid className={styles.gridItemIdx} size={12 / 7} key={index}>
                 {item}
               </Grid>
